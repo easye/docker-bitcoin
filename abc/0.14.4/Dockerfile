@@ -4,7 +4,7 @@ RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
 RUN set -ex \
 	&& apt-get update \
-	&& apt-get install -qq --no-install-recommends ca-certificates dirmngr gosu gpg wget \
+	&& apt-get install -qq --no-install-recommends ca-certificates curl dirmngr gosu gpg \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV BITCOIN_VERSION 0.14.4
@@ -13,17 +13,17 @@ ENV BITCOIN_SHA256 4c39e84567e251dc299593643cd45d1efd7cc676e6d619ba506c3359a6a1c
 
 # install bitcoin binaries
 RUN set -ex \
-	&& BITCOIN_DIST=$(basename $BITCOIN_URL) \
-	&& wget -qO $BITCOIN_DIST $BITCOIN_URL \
-	&& echo "$BITCOIN_SHA256 $BITCOIN_DIST" | sha256sum -c - \
-	&& tar -xzvf $BITCOIN_DIST -C /usr/local --strip-components=1 --exclude=*-qt \
-	&& rm bitcoin*
+	&& cd /tmp \
+	&& curl -fsSL -o bitcoin.tar.gz "$BITCOIN_URL" \
+	&& echo "$BITCOIN_SHA256 bitcoin.tar.gz" | sha256sum -c - \
+	&& tar -xzvf bitcoin.tar.gz -C /usr/local --strip-components=1 --exclude=*-qt \
+	&& rm -rf /tmp/*
 
 # create data directory
 ENV BITCOIN_DATA /data
-RUN mkdir $BITCOIN_DATA \
-	&& chown -R bitcoin:bitcoin $BITCOIN_DATA \
-	&& ln -sfn $BITCOIN_DATA /home/bitcoin/.bitcoin \
+RUN mkdir "$BITCOIN_DATA" \
+	&& chown -R bitcoin:bitcoin "$BITCOIN_DATA" \
+	&& ln -sfn "$BITCOIN_DATA" /home/bitcoin/.bitcoin \
 	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
 VOLUME /data
 
