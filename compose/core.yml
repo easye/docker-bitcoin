@@ -1,0 +1,28 @@
+version: "3"
+services:
+  bitcoind-core:
+    image: easye/bitcoin-core
+    # specify additional command line arguments here
+    command: bitcoind -reindex
+    healthcheck:
+      test: ["CMD", "/entrypoint.sh", "bitcoin-cli", "getinfo"]
+    ports:
+      # change to 18333 if running testnet
+      - "8333:8333"
+    volumes:
+      - bitcoin-core:/home/bitcoin
+    networks:
+      - bitcoin-core
+  bitcoin-cli:
+    image: easye/bitcoin-core
+    entrypoint: ["/entrypoint.sh", "bitcoin-cli"]
+    command: ""
+    depends_on:
+      - bitcoind-core
+    network_mode: service:bitcoind-core
+
+networks:
+  bitcoin-core:
+
+volumes:
+  bitcoin-core:
