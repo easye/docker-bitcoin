@@ -1,5 +1,7 @@
 FROM debian:stretch-slim
 
+ENV software "BitcoinnABC"
+
 RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
 
 RUN set -ex \
