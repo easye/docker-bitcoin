@@ -10,7 +10,7 @@ services:
       # change to 18333 if running testnet
       - "18333:18333"
     volumes:
-      - bitcoin-abc-testnet:/data
+      - bitcoin-abc-testnet:/home/bitcoin
     networks:
       - bitcoin-abc-testnet
   bitcoin-cli:
