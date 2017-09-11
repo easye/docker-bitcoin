@@ -1,6 +1,7 @@
 FROM debian:stretch-slim
 
-RUN groupadd -r bitcoin && useradd -r -m -g bitcoin bitcoin
+RUN groupadd -r bitcoin \
+ && useradd -r -m -g bitcoin bitcoin
 
 RUN set -ex \
 	&& apt-get update \
@@ -25,12 +26,13 @@ RUN set -ex \
 	&& rm bitcoin*
 
 # create data directory
+VOLUME /data
 ENV BITCOIN_DATA /data
-RUN mkdir $BITCOIN_DATA \
-	&& chown -R bitcoin:bitcoin $BITCOIN_DATA \
+RUN \
+	chown -R bitcoin:bitcoin $BITCOIN_DATA \
 	&& ln -sfn $BITCOIN_DATA /home/bitcoin/.bitcoin \
 	&& chown -h bitcoin:bitcoin /home/bitcoin/.bitcoin
-VOLUME /data
+
 
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
