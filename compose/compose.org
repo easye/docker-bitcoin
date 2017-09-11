@@ -1,0 +1,3 @@
+#+BEGIN_SRC 
+docker-compose -f core.yml -p bitcoin_core up -d
+#+END_SRC
